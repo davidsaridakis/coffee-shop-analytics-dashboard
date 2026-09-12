@@ -1,0 +1,180 @@
+table 'public fact_transactions'
+	lineageTag: 25e8441f-f25f-443b-a435-892962451397
+
+	column transaction_id
+		dataType: int64
+		formatString: 0
+		lineageTag: dfeb87db-300d-4d8d-99ee-dfaab33bcdaf
+		summarizeBy: sum
+		sourceColumn: transaction_id
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column transaction_date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: cf71a861-727c-44f4-b0fe-15d784d12dec
+		summarizeBy: none
+		sourceColumn: transaction_date
+
+		variation Variación
+			isDefault
+			relationship: d710e022-831f-4900-861a-46c607c5a3ac
+			defaultHierarchy: LocalDateTable_c743bab2-d4af-43b5-a914-65f343e53354.'Jerarquía de fechas'
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column transaction_time
+		dataType: dateTime
+		formatString: Long Time
+		lineageTag: 7300d6ec-1dcb-4d90-9109-87f9a8a93d35
+		summarizeBy: none
+		sourceColumn: transaction_time
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Time
+
+	column transaction_qty
+		dataType: int64
+		formatString: 0
+		lineageTag: 4d78de6f-b761-41a7-bee3-2d67c426fa97
+		summarizeBy: sum
+		sourceColumn: transaction_qty
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column unit_price
+		dataType: double
+		lineageTag: c0a36fd9-eb18-45d5-ba35-ba0da97fce0b
+		summarizeBy: sum
+		sourceColumn: unit_price
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column line_revenue
+		dataType: double
+		lineageTag: 8c92c2c2-f6d8-4f66-abb4-905de3cec95f
+		summarizeBy: sum
+		sourceColumn: line_revenue
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column store_id
+		dataType: int64
+		formatString: 0
+		lineageTag: ea059bb8-68d6-42a8-8d48-9b0b06f82605
+		summarizeBy: none
+		sourceColumn: store_id
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column product_id
+		dataType: int64
+		formatString: 0
+		lineageTag: 68db5711-5630-43f1-9c2b-6cc4214da74e
+		summarizeBy: none
+		sourceColumn: product_id
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column transaction_hour = HOUR('public fact_transactions'[transaction_time])
+		formatString: 0
+		lineageTag: 93fb4522-9ab0-4219-880c-1c0c282e117a
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+	column day_of_week = WEEKDAY('public fact_transactions'[transaction_date], 2)
+		formatString: 0
+		lineageTag: 9318e643-119a-460c-86c4-6d18226af1b3
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+	column is_weekend = IF('public fact_transactions'[day_of_week] >= 5 , 1, 0)
+		formatString: 0
+		lineageTag: 3f55e4f6-f880-4fc7-87e7-fe751833c262
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Day Type' =
+			IF(
+			    'public fact_transactions'[is_weekend] = 1,
+			    "Weekend",
+			    "Weekday"
+			)
+		lineageTag: 023ca642-881c-4f6f-a75a-82465a31a188
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Day Name' =
+			
+			SWITCH(
+			    'public fact_transactions'[day_of_week],
+			    1, "Mon",
+			    2, "Tue",
+			    3, "Wed",
+			    4, "Thu",
+			    5, "Fri",
+			    6, "Sat",
+			    7, "Sun"
+			)
+		lineageTag: 74ece20d-4e8d-4799-93a6-9e2428e76dc0
+		summarizeBy: none
+		sortByColumn: day_of_week
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column Shift =
+			
+			IF(
+			    'public fact_transactions'[transaction_hour] >= 6 &&
+			    'public fact_transactions'[transaction_hour] <= 11,
+			    "Morning sales",
+			    "Afternoon sales"
+			)
+		lineageTag: da1ed3a9-d463-485b-b34e-9927b0974093
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'public fact_transactions' = m
+		mode: import
+		source =
+				let
+				    Origen = PostgreSQL.Database("localhost: 5432", "coffee_shop_analytics_db"),
+				    public_fact_transactions = Origen{[Schema="public",Item="fact_transactions"]}[Data]
+				in
+				    public_fact_transactions
+
+	changedProperty = IsHidden
+
+	annotation PBI_ResultType = Table
+

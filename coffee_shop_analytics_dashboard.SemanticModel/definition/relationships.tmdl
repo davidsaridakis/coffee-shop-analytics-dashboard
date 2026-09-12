@@ -1,0 +1,22 @@
+relationship d710e022-831f-4900-861a-46c607c5a3ac
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'public fact_transactions'.transaction_date
+	toColumn: LocalDateTable_c743bab2-d4af-43b5-a914-65f343e53354.Date
+
+relationship b28c7324-d60e-413a-ae69-0efdcd80a40c
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'public stg_cafe_transactions'.transaction_date
+	toColumn: LocalDateTable_08182a3e-83a7-4f6e-8a1d-bad2ac003961.Date
+
+relationship d7e856a0-d6c6-4037-b35b-81b1e65eadc7
+	fromColumn: 'public fact_transactions'.product_id
+	toColumn: 'public dim_products'.product_id
+
+	annotation PBI_IsFromSource = FS
+
+relationship 9a219e60-08ee-4c3b-bdf8-e366d05ef805
+	fromColumn: 'public fact_transactions'.store_id
+	toColumn: 'public dim_stores'.store_id
+
+	annotation PBI_IsFromSource = FS
+

@@ -1,0 +1,25 @@
+model Model
+	culture: es-ES
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: ga-IE
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBI_QueryOrder = ["public dim_products","public fact_transactions","public stg_cafe_transactions","public dim_stores","_Medidas"]
+
+annotation PBI_ProTooling = ["MCP-PBIModeling","DevMode"]
+
+ref table 'public dim_products'
+ref table 'public fact_transactions'
+ref table DateTableTemplate_9ed70a82-de3b-4497-83d5-1ae65c6edee0
+ref table LocalDateTable_c743bab2-d4af-43b5-a914-65f343e53354
+ref table 'public stg_cafe_transactions'
+ref table LocalDateTable_08182a3e-83a7-4f6e-8a1d-bad2ac003961
+ref table 'public dim_stores'
+ref table _Medidas
+
+ref cultureInfo es-ES
+

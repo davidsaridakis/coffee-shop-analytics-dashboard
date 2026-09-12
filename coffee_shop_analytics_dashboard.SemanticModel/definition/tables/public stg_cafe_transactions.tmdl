@@ -1,0 +1,155 @@
+table 'public stg_cafe_transactions'
+	isHidden
+	lineageTag: 1db10339-414f-4c5a-b6df-53e3ecaa64f1
+
+	column transaction_id
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: b9679ba9-374c-4dcb-96e2-714e3ff1385c
+		summarizeBy: sum
+		sourceColumn: transaction_id
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column transaction_date
+		dataType: dateTime
+		isHidden
+		formatString: Long Date
+		lineageTag: 041f703d-8e83-49cf-95e0-c2161e2ac6bb
+		summarizeBy: none
+		sourceColumn: transaction_date
+
+		variation Variación
+			isDefault
+			relationship: b28c7324-d60e-413a-ae69-0efdcd80a40c
+			defaultHierarchy: LocalDateTable_08182a3e-83a7-4f6e-8a1d-bad2ac003961.'Jerarquía de fechas'
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column transaction_time
+		dataType: dateTime
+		isHidden
+		formatString: Long Time
+		lineageTag: 9f9eaf6d-93a7-494a-8272-1b6d7a592326
+		summarizeBy: none
+		sourceColumn: transaction_time
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Time
+
+	column transaction_qty
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 4f880f4c-43a2-460c-b655-8f1718ae2068
+		summarizeBy: sum
+		sourceColumn: transaction_qty
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column store_id
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: da542bc6-6da3-42fe-b4c9-1fa53fe67d6d
+		summarizeBy: sum
+		sourceColumn: store_id
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column store_location
+		dataType: string
+		isHidden
+		lineageTag: 1181dace-c538-4555-9cea-10f98eb187d1
+		summarizeBy: none
+		sourceColumn: store_location
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column product_id
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: e724f75c-a950-41f9-9295-3148a7580eea
+		summarizeBy: sum
+		sourceColumn: product_id
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column unit_price
+		dataType: double
+		isHidden
+		lineageTag: c28b3667-b194-4108-844f-6e2b46fce6b8
+		summarizeBy: sum
+		sourceColumn: unit_price
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column product_category
+		dataType: string
+		isHidden
+		lineageTag: a41e5159-3f37-4b2f-b16e-97bb70048e5a
+		summarizeBy: none
+		sourceColumn: product_category
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column product_type
+		dataType: string
+		isHidden
+		lineageTag: 351b7206-5df9-4f43-b2bc-5ca1b8ac533c
+		summarizeBy: none
+		sourceColumn: product_type
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column product_detail
+		dataType: string
+		isHidden
+		lineageTag: 7b44e0cb-aba9-41ec-8d7d-1ba54a62942a
+		summarizeBy: none
+		sourceColumn: product_detail
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'public stg_cafe_transactions' = m
+		mode: import
+		source =
+				let
+				    Origen = PostgreSQL.Database("localhost: 5432", "coffee_shop_analytics_db"),
+				    public_stg_cafe_transactions = Origen{[Schema="public",Item="stg_cafe_transactions"]}[Data]
+				in
+				    public_stg_cafe_transactions
+
+	changedProperty = IsHidden
+
+	annotation PBI_ResultType = Table
+

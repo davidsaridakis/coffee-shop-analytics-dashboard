@@ -1,0 +1,192 @@
+table _Medidas
+	lineageTag: 1425283e-4f3a-4eaa-8e57-b833abe26c0d
+
+	measure 'Total Revenue' = SUM('public fact_transactions'[line_revenue])
+		displayFolder: Totals
+		lineageTag: 621117b5-5e8b-4c7d-9814-5c91e9c80186
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Total Transaction Count' = COUNT('public fact_transactions'[transaction_id])
+		formatString: 0
+		displayFolder: Totals
+		lineageTag: e73d2615-0e45-4adc-b97e-9cd79c9071e4
+
+	measure 'Total Units Sold' = SUM('public fact_transactions'[transaction_qty])
+		formatString: 0
+		displayFolder: Totals
+		lineageTag: 2306f425-b8ac-47e4-9814-773444d301e3
+
+	measure 'Avg Hourly Transactions' =
+			AVERAGEX(
+			    SUMMARIZE(
+			        'public fact_transactions',
+			        'public fact_transactions'[transaction_date],
+			        'public fact_transactions'[transaction_hour],
+			        'public fact_transactions'[is_weekend]
+			    ),
+			    [Total Transaction Count]
+			)
+		displayFolder: Time Averages\Hourly
+		lineageTag: 102856b5-c944-412b-9918-0310dbede704
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Avg Hourly Revenue' =
+			AVERAGEX(
+			    SUMMARIZE(
+			        'public fact_transactions',
+			        'public fact_transactions'[transaction_date],
+			        'public fact_transactions'[transaction_hour],
+			        'public fact_transactions'[is_weekend]
+			    ),
+			    [Total Revenue]
+			)
+		displayFolder: Time Averages\Hourly
+		lineageTag: cb304d3c-026a-408d-a7c5-a0bf072254c5
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Avg Hourly Units Sold' =
+			AVERAGEX(
+			    SUMMARIZE(
+			        'public fact_transactions',
+			        'public fact_transactions'[transaction_date],
+			        'public fact_transactions'[transaction_hour],
+			        'public fact_transactions'[is_weekend]
+			    ),
+			    [Total Units Sold]
+			)
+		displayFolder: Time Averages\Hourly
+		lineageTag: f82cd57e-3606-44c0-a208-4e75fe82b362
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Revenue Share %' = ```
+			
+			DIVIDE(
+			    [Total Revenue],
+			    CALCULATE([Total Revenue], ALL('public dim_products'[product_category]))
+			)
+			
+			
+			```
+		displayFolder: Ratios
+		lineageTag: 9097fb86-8f13-453c-9420-3dbc39869ebc
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Volume Share %' =
+			
+			DIVIDE(
+			    [Total Units Sold],
+			    CALCULATE([Total Units Sold], ALL('public dim_products'[product_category]))
+			)
+		displayFolder: Ratios
+		lineageTag: 907a1478-80df-43fd-b72c-a53b54f9b317
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Avg Hourly Units by Category' =
+			
+			AVERAGEX(
+			    SUMMARIZE(
+			        'public fact_transactions',
+			        'public fact_transactions'[transaction_date],
+			        'public fact_transactions'[transaction_hour],
+			        'public dim_products'[product_category]
+			    ),
+			    [Total Units Sold]
+			)
+		displayFolder: Time Averages\Hourly
+		lineageTag: 82ce0350-4eaa-467c-b38c-ec9908dd04f0
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Avg Daily Units by Product Type' =
+			
+			AVERAGEX(
+			    SUMMARIZE(
+			            'public fact_transactions',
+			            'public fact_transactions'[transaction_date],
+			            'public dim_products'[product_type]
+			    ),
+			    [Total Units Sold]
+			)
+		displayFolder: Time Averages\Daily
+		lineageTag: faf244dd-10a2-421f-98a8-63c58641a688
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Avg Daily Units by Shift' =
+			
+			AVERAGEX(
+			    SUMMARIZE(
+			        'public fact_transactions',
+			        'public fact_transactions'[transaction_date],
+			        'public fact_transactions'[Shift]
+			    ),
+			    [Total Units Sold]
+			)
+		displayFolder: Time Averages\Daily
+		lineageTag: fd717d5a-f018-4a9d-a691-4e6401135a23
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Avg Transaction Value' =
+			
+			DIVIDE([Total Revenue], [Total Transaction Count])
+		displayFolder: Ratios
+		lineageTag: f8ed68ff-269d-43fc-a7da-5a9d2ac8a4d7
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Avg Daily Units Sold' =
+			
+			AVERAGEX(
+			    VALUES('public fact_transactions'[transaction_date]),
+			    [Total Units Sold]
+			)
+		displayFolder: Time Averages\Daily
+		lineageTag: 6eb91686-f73b-40ca-9655-4224b712db54
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Morning Units' =
+			
+			CALCULATE(
+			    [Total Units Sold],
+			    'public fact_transactions'[Shift] = "Morning sales"
+			)
+		formatString: 0
+		displayFolder: Segments\Morning
+		lineageTag: 4b45da05-b1ec-4ff6-8a3f-d14bc7701ef1
+
+	measure 'Morning Bakery Sales %' =
+			
+			DIVIDE(
+			    [Morning Units],
+			    [Total Units Sold]
+			)
+		formatString: 0.0\ %;-0.0\ %;0.0\ %
+		displayFolder: Segments\Morning
+		lineageTag: 6f755c30-9685-416e-a39b-49e03ceb2f8f
+
+	/// Average revenue generated per unit sold
+	measure 'Revenue per Unit' = DIVIDE([Total Revenue], [Total Units Sold])
+		formatString: $#,##0.00
+		displayFolder: Ratios
+		lineageTag: f9046891-a044-4512-8742-3a17b98c7d72
+
+	partition _Medidas = m
+		mode: import
+		source =
+				let
+				    Origen = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("i44FAA==", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [Columna1 = _t]),
+				    #"Tipo cambiado" = Table.TransformColumnTypes(Origen,{{"Columna1", type text}}),
+				    #"Columnas quitadas" = Table.RemoveColumns(#"Tipo cambiado",{"Columna1"})
+				in
+				    #"Columnas quitadas"
+
+	annotation PBI_ResultType = Table
+
