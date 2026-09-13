@@ -3,7 +3,7 @@
   "artifacts": [
     {
       "report": {
-        "path": "coffee_shop_analytics_dashboard_test.Report"
+        "path": "coffee_shop_analytics_dashboard.Report"
       }
     }
   ],
